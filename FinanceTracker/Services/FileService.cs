@@ -1,4 +1,6 @@
 using FinanceTracker.Models;
+using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Hosting;
 
 namespace FinanceTracker.Services
 {
