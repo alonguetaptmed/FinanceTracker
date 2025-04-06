@@ -1,0 +1,21 @@
+@model FinanceTracker.Controllers.ErrorViewModel
+@{
+    ViewData["Title"] = "Erreur";
+}
+
+<h1 class="text-danger">Erreur.</h1>
+<h2 class="text-danger">Une erreur s'est produite lors du traitement de votre demande.</h2>
+
+@if (Model.ShowRequestId)
+{
+    <p>
+        <strong>Request ID:</strong> <code>@Model.RequestId</code>
+    </p>
+}
+
+<h3>Mode Développement</h3>
+<p>
+    En mode développement (Development), des informations détaillées sur l'erreur sont affichées.
+    <br />
+    <strong>Pour afficher l'environnement de production, modifiez le fichier <code>appsettings.json</code> pour définir <code>ASPNETCORE_ENVIRONMENT</code> à <code>Production</code>.</strong>
+</p>
