@@ -10,13 +10,13 @@ namespace FinanceTracker.ViewModels
         [Display(Name = "Nom du fichier")]
         public string FileName { get; set; } = string.Empty;
         
-        [Display(Name = "Chemin")]
+        [Display(Name = "Chemin du fichier")]
         public string FilePath { get; set; } = string.Empty;
         
-        [Display(Name = "Type")]
+        [Display(Name = "Type de fichier")]
         public string ContentType { get; set; } = string.Empty;
         
-        [Display(Name = "Taille")]
+        [Display(Name = "Taille du fichier")]
         public long FileSize { get; set; }
         
         [Display(Name = "Date d'ajout")]
@@ -24,19 +24,19 @@ namespace FinanceTracker.ViewModels
         
         public int TransactionId { get; set; }
         
-        // Pour déterminer s'il s'agit d'une image (pour l'affichage)
         public bool IsImage => ContentType.StartsWith("image/");
         
-        // Pour l'affichage formaté de la taille du fichier
+        // Format de la taille du fichier pour l'affichage
         public string FormattedSize
         {
             get
             {
                 if (FileSize < 1024)
-                    return $"{FileSize} octets";
-                if (FileSize < 1024 * 1024)
-                    return $"{FileSize / 1024:F2} Ko";
-                return $"{FileSize / (1024 * 1024):F2} Mo";
+                    return $"{FileSize} B";
+                else if (FileSize < 1024 * 1024)
+                    return $"{FileSize / 1024:F2} KB";
+                else
+                    return $"{FileSize / (1024 * 1024):F2} MB";
             }
         }
         
@@ -52,6 +52,20 @@ namespace FinanceTracker.ViewModels
                 FileSize = attachment.FileSize,
                 UploadedAt = attachment.UploadedAt,
                 TransactionId = attachment.TransactionId
+            };
+        }
+        
+        public Attachment ToAttachment()
+        {
+            return new Attachment
+            {
+                Id = Id,
+                FileName = FileName,
+                FilePath = FilePath,
+                ContentType = ContentType,
+                FileSize = FileSize,
+                UploadedAt = UploadedAt,
+                TransactionId = TransactionId
             };
         }
     }

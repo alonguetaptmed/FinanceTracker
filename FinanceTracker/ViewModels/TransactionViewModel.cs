@@ -46,15 +46,10 @@ namespace FinanceTracker.ViewModels
         [Display(Name = "Fichiers joints")]
         public List<IFormFile>? UploadedFiles { get; set; }
         
-        // Liste des pièces jointes pour l'affichage
+        // Liste des pièces jointes existantes
         public List<AttachmentViewModel> Attachments { get; set; } = new List<AttachmentViewModel>();
         
-        // Date de création pour l'affichage
-        [Display(Name = "Créé le")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
-        
-        // Date de modification pour l'affichage
-        [Display(Name = "Modifié le")]
         public DateTime? UpdatedAt { get; set; }
         
         // Convertisseur entre le modèle et le ViewModel
@@ -68,12 +63,12 @@ namespace FinanceTracker.ViewModels
                 Date = transaction.Date,
                 Notes = transaction.Notes,
                 AccountId = transaction.AccountId,
-                AccountName = transaction.Account?.Name ?? "",
+                AccountName = transaction.Account?.Name ?? string.Empty,
                 CreatedAt = transaction.CreatedAt,
                 UpdatedAt = transaction.UpdatedAt
             };
             
-            // Récupération des catégories
+            // Conversion des catégories
             if (transaction.TransactionCategories != null)
             {
                 foreach (var tc in transaction.TransactionCategories)
@@ -81,17 +76,16 @@ namespace FinanceTracker.ViewModels
                     viewModel.Categories.Add(new TransactionCategoryViewModel
                     {
                         CategoryId = tc.CategoryId,
-                        CategoryName = tc.Category?.Name ?? "",
-                        CategoryColor = tc.Category?.Color ?? "#3498db",
                         Amount = tc.Amount,
-                        Percentage = tc.Percentage
+                        CategoryName = tc.Category?.Name ?? string.Empty,
+                        CategoryColor = tc.Category?.Color ?? "#3498db"
                     });
                     
                     viewModel.SelectedCategoryIds.Add(tc.CategoryId);
                 }
             }
             
-            // Récupération des pièces jointes
+            // Conversion des pièces jointes
             if (transaction.Attachments != null)
             {
                 foreach (var attachment in transaction.Attachments)
