@@ -1,0 +1,87 @@
+html {
+  position: relative;
+  min-height: 100%;
+}
+
+body {
+  margin-bottom: 60px;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+}
+
+.footer {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  white-space: nowrap;
+  line-height: 60px;
+}
+
+/* Styles personnalisés */
+.badge {
+  font-size: 0.9em;
+  font-weight: 500;
+  padding: 0.5em 0.7em;
+}
+
+.form-control:focus, .form-select:focus, .btn:focus {
+  box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.card {
+  box-shadow: 0 0.125rem 0.25rem rgba(0, 0, 0, 0.075);
+  border-radius: 0.5rem;
+  border: 1px solid rgba(0, 0, 0, 0.125);
+  overflow: hidden;
+}
+
+.card-header {
+  background-color: rgba(0, 0, 0, 0.03);
+  border-bottom: 1px solid rgba(0, 0, 0, 0.125);
+  font-weight: 500;
+}
+
+.form-label {
+  font-weight: 500;
+  margin-bottom: 0.3rem;
+}
+
+.form-text {
+  font-size: 0.85em;
+}
+
+/* Styles pour les pièces jointes */
+.attachment-thumbnail {
+  max-height: 150px;
+  object-fit: cover;
+  object-position: center;
+}
+
+/* Catégories et tags */
+.category-selection {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+/* Animation pour les alertes */
+.alert {
+  animation: fadeIn 0.3s ease-in-out;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(-10px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Responsivité pour les tableaux */
+@media (max-width: 768px) {
+  .table-responsive {
+    font-size: 0.9rem;
+  }
+  
+  /* Styles pour forcer l'affichage complet des tableaux sur mobile */
+  .table-responsive .table td,
+  .table-responsive .table th {
+    white-space: normal;
+  }
+}
