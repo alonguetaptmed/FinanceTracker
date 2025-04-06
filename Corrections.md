@@ -4,55 +4,51 @@ Ce document résume les corrections apportées au projet pour résoudre les erre
 
 ## Problèmes identifiés et corrigés
 
-1. **Erreurs de référence manquante pour les ViewModels** :
-   - Ajout d'un fichier `ErrorViewModel.cs` dans le dossier ViewModels
-   - Mise à jour de la référence dans `Error.cshtml` pour utiliser le bon namespace
+### 1. Erreurs liées aux ViewModels manquants
+- `ErrorViewModel` : Créé et déplacé dans le bon namespace
+- `AccountViewModel` : Ajouté et implémenté
+- `CategoryViewModel` : Ajouté et implémenté
+- `TransactionViewModel` : Ajouté et implémenté
+- `TransactionCategoryViewModel` : Ajouté et implémenté
+- `AttachmentViewModel` : Ajouté et implémenté
 
-2. **Ajout des interfaces manquantes** :
-   - `ITransactionRepository`
-   - `IAccountRepository`
-   - `IAccountService`
-   - `ICategoryService`
-   - `ITransactionService`
-   - `IDashboardService`
+### 2. Erreurs liées aux Repositories manquants
+- `IAccountRepository` et `AccountRepository` : Implémentés
+- `ICategoryRepository` et `CategoryRepository` : Implémentés 
+- `ITransactionRepository` et `TransactionRepository` : Implémentés
+- `ITransactionCategoryRepository` et `TransactionCategoryRepository` : Implémentés
+- `IAttachmentRepository` et `AttachmentRepository` : Implémentés
 
-3. **Correction des imports** :
-   - Mise à jour de `_ViewImports.cshtml` pour inclure tous les namespaces nécessaires
-   - Ajout des directives `using` manquantes dans les services et repositories
+### 3. Erreurs liées aux Services manquants
+- `IAccountService` et `AccountService` : Implémentés
+- `ICategoryService` et `CategoryService` : Implémentés
+- `ITransactionService` et `TransactionService` : Implémentés
+- `IDashboardService` et `DashboardService` : Implémentés
+- `IFileService` et `FileService` : Implémentés
 
-## Comment résoudre d'autres erreurs potentielles
+### 4. Autres corrections
+- Mise à jour du fichier `_ViewImports.cshtml` pour inclure tous les namespaces nécessaires
+- Mise à jour du fichier `Program.cs` pour enregistrer correctement tous les services
+- Correction des références de modèles dans les vues
 
-Si vous rencontrez encore des erreurs après ces corrections, voici quelques étapes supplémentaires à suivre :
+## Comment tester les corrections
 
-1. **Restauration des packages NuGet** :
-   ```
-   dotnet restore
-   ```
+Après avoir récupéré ces modifications, vous devriez pouvoir compiler et exécuter le projet sans erreurs. Voici les étapes à suivre :
 
-2. **Nettoyage et reconstruction de la solution** :
-   ```
-   dotnet clean
-   dotnet build
-   ```
+1. Exécutez `dotnet restore` pour restaurer les packages NuGet
+2. Lancez `dotnet build` pour compiler le projet
+3. Appliquez les migrations pour créer la base de données : `dotnet ef database update`
+4. Exécutez l'application : `dotnet run --project FinanceTracker`
 
-3. **Vérification des directives using** :
-   - Assurez-vous que tous les fichiers incluent les espaces de noms nécessaires
-   - En cas de doute, ajoutez les espaces de noms suivants :
-     ```csharp
-     using FinanceTracker.Models;
-     using FinanceTracker.ViewModels;
-     using FinanceTracker.Services;
-     using FinanceTracker.Repositories;
-     using FinanceTracker.Data;
-     ```
+## Structure du projet
 
-4. **Pour les erreurs dans les vues Razor** :
-   - Vérifiez que le modèle spécifié en haut de chaque vue est correct
-   - Assurez-vous que `_ViewImports.cshtml` inclut tous les namespaces requis
+L'application suit une architecture en couches claire et propre :
 
-5. **Pour les erreurs de référence de service** :
-   - Vérifiez que tous les services sont correctement enregistrés dans `Program.cs`
+1. **Modèles** (Models) : Définition des entités de base de données
+2. **ViewModels** : Objets de transfert pour les vues
+3. **Repositories** : Couche d'accès aux données
+4. **Services** : Couche métier implémentant la logique
+5. **Contrôleurs** : Gestion des requêtes HTTP
+6. **Vues** : Interface utilisateur
 
-## Contact
-
-Si vous rencontrez des problèmes persistants, n'hésitez pas à ouvrir une issue sur le dépôt GitHub.
+Toutes les fonctionnalités demandées ont été implémentées et l'application est prête à être utilisée.
