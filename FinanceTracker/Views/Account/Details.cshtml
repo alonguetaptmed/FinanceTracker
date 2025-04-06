@@ -1,0 +1,91 @@
+@model AccountViewModel
+@{
+    ViewData["Title"] = "Détails du compte";
+    var transactions = ViewBag.Transactions as IEnumerable<TransactionViewModel>;
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>@Model.Name</h1>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Modifier
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Informations du compte
+            </div>
+            <div class="card-body">
+                <dl class="row mb-0">
+                    <dt class="col-sm-5">@Html.DisplayNameFor(model => model.Name)</dt>
+                    <dd class="col-sm-7">@Html.DisplayFor(model => model.Name)</dd>
+                    
+                    <dt class="col-sm-5">@Html.DisplayNameFor(model => model.InitialBalance)</dt>
+                    <dd class="col-sm-7">@Html.DisplayFor(model => model.InitialBalance)</dd>
+                    
+                    <dt class="col-sm-5">@Html.DisplayNameFor(model => model.CreatedAt)</dt>
+                    <dd class="col-sm-7">@Model.CreatedAt.ToString("dd/MM/yyyy")</dd>
+                </dl>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card bg-light">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-cash-coin"></i> Solde actuel
+            </div>
+            <div class="card-body text-center">
+                <h1 class="display-5 @(Model.CurrentBalance >= 0 ? "text-success" : "text-danger")">
+                    @Model.CurrentBalance.ToString("C2")
+                </h1>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-plus-circle"></i> Actions
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-controller="Transaction" asp-action="Create" class="btn btn-success">
+                        <i class="bi bi-plus-circle"></i> Nouvelle transaction
+                    </a>
+                    <a asp-controller="Dashboard" asp-action="Index" asp-route-accountId="@Model.Id" class="btn btn-outline-primary">
+                        <i class="bi bi-graph-up"></i> Voir les statistiques
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="card">
+    <div class="card-header">
+        <i class="bi bi-list"></i> Transactions du compte
+    </div>
+    <div class="card-body">
+        @if (transactions != null && transactions.Any())
+        {
+            <partial name="_TransactionListPartial" model="transactions" />
+        }
+        else
+        {
+            <div class="alert alert-info">
+                <p>Ce compte ne contient pas encore de transactions.</p>
+                <a asp-controller="Transaction" asp-action="Create" class="btn btn-success">
+                    <i class="bi bi-plus-circle"></i> Ajouter une transaction
+                </a>
+            </div>
+        }
+    </div>
+</div>

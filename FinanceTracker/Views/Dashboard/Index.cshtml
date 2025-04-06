@@ -1,0 +1,211 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Tableau de bord";
+}
+
+<h1>Tableau de bord</h1>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <i class="bi bi-sliders"></i> Filtres
+            </div>
+            <div class="card-body">
+                <form asp-action="Filter" method="post" class="row g-3">
+                    <div class="col-md-3">
+                        <label asp-for="AccountId" class="form-label">Compte</label>
+                        <select asp-for="AccountId" asp-items="ViewBag.Accounts" class="form-select">
+                            <option value="0">Tous les comptes</option>
+                        </select>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="Period" class="form-label">Période</label>
+                        <select asp-for="Period" asp-items="ViewBag.Periods" class="form-select"></select>
+                    </div>
+                    <div class="col-md-3">
+                        <label asp-for="TransactionType" class="form-label">Type de transaction</label>
+                        <select asp-for="TransactionType" asp-items="ViewBag.TransactionTypes" class="form-select"></select>
+                    </div>
+                    <div class="col-md-3 d-flex align-items-end">
+                        <button type="submit" class="btn btn-primary w-100">
+                            <i class="bi bi-filter"></i> Appliquer les filtres
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card border-primary mb-3">
+            <div class="card-header bg-primary text-white">Solde total</div>
+            <div class="card-body">
+                <h4 class="card-title display-6">@Model.TotalBalance.ToString("C2")</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-success mb-3">
+            <div class="card-header bg-success text-white">Revenus</div>
+            <div class="card-body">
+                <h4 class="card-title display-6">@Model.TotalIncome.ToString("C2")</h4>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card border-danger mb-3">
+            <div class="card-header bg-danger text-white">Dépenses</div>
+            <div class="card-body">
+                <h4 class="card-title display-6">@Model.TotalExpenses.ToString("C2")</h4>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-pie-chart"></i> Dépenses par catégorie
+            </div>
+            <div class="card-body">
+                <canvas id="expensesByCategoryChart" height="300"></canvas>
+                @if (!Model.ExpensesByCategory.Any())
+                {
+                    <div class="alert alert-info mt-3">
+                        Aucune donnée disponible pour cette période
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-graph-up"></i> Évolution du solde
+            </div>
+            <div class="card-body">
+                <canvas id="balanceHistoryChart" height="300"></canvas>
+                @if (!Model.BalanceHistory.Any())
+                {
+                    <div class="alert alert-info mt-3">
+                        Aucune donnée disponible pour cette période
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-lg-12">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-clock-history"></i> Transactions récentes
+            </div>
+            <div class="card-body">
+                @if (Model.RecentTransactions.Any())
+                {
+                    <partial name="_TransactionListPartial" model="Model.RecentTransactions" />
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        Aucune transaction récente. <a asp-controller="Transaction" asp-action="Create">Créez votre première transaction</a>.
+                    </div>
+                }
+                <div class="text-center mt-3">
+                    <a asp-controller="Transaction" asp-action="Index" class="btn btn-primary">Voir toutes les transactions</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            // Graphique des dépenses par catégorie
+            var expensesCtx = document.getElementById('expensesByCategoryChart').getContext('2d');
+            var expensesData = {
+                labels: [@Html.Raw(string.Join(",", Model.ExpensesByCategory.Select(c => $"'{c.CategoryName}'").ToArray()))],
+                datasets: [{
+                    data: [@string.Join(",", Model.ExpensesByCategory.Select(c => c.Amount))],
+                    backgroundColor: [@Html.Raw(string.Join(",", Model.ExpensesByCategory.Select(c => $"'{c.Color}'").ToArray()))],
+                }]
+            };
+            
+            new Chart(expensesCtx, {
+                type: 'pie',
+                data: expensesData,
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                        },
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var label = context.label || '';
+                                    var value = context.raw;
+                                    var total = context.dataset.data.reduce(function(acc, val) { return acc + val; }, 0);
+                                    var percentage = Math.round((value / total) * 100);
+                                    return label + ': ' + value.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) + ' (' + percentage + '%)';
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+            
+            // Graphique de l'évolution du solde
+            var balanceCtx = document.getElementById('balanceHistoryChart').getContext('2d');
+            var balanceData = {
+                labels: [@Html.Raw(string.Join(",", Model.BalanceHistory.Select(b => $"'{b.Date}'").ToArray()))],
+                datasets: [{
+                    label: 'Solde',
+                    data: [@string.Join(",", Model.BalanceHistory.Select(b => b.Balance))],
+                    borderColor: '#3498db',
+                    backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                    borderWidth: 2,
+                    fill: true,
+                    tension: 0.4
+                }]
+            };
+            
+            new Chart(balanceCtx, {
+                type: 'line',
+                data: balanceData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: false,
+                            ticks: {
+                                callback: function(value) {
+                                    return value.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    var label = context.dataset.label || '';
+                                    var value = context.raw;
+                                    return label + ': ' + value.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' });
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+}

@@ -1,0 +1,84 @@
+@model AccountViewModel
+@{
+    ViewData["Title"] = "Modifier le compte";
+}
+
+<h1>Modifier le compte</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-wallet2"></i> Détails du compte
+            </div>
+            <div class="card-body">
+                <form asp-action="Edit">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    <input type="hidden" asp-for="Id" />
+                    <input type="hidden" asp-for="CreatedAt" />
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="InitialBalance" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">€</span>
+                            <input asp-for="InitialBalance" class="form-control" type="number" step="0.01" />
+                        </div>
+                        <span asp-validation-for="InitialBalance" class="text-danger"></span>
+                        <div class="form-text">Attention : la modification du solde initial affectera le solde actuel.</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à la liste
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Enregistrer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Informations sur le compte
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">@Model.Name</h5>
+                
+                <div class="mb-3">
+                    <label class="form-label">Solde actuel</label>
+                    <h3 class="@(Model.CurrentBalance >= 0 ? "text-success" : "text-danger")">@Model.CurrentBalance.ToString("C2")</h3>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Date de création</label>
+                    <p>@Model.CreatedAt.ToString("dd/MM/yyyy")</p>
+                </div>
+                
+                <div class="mb-3">
+                    <label class="form-label">Nombre de transactions</label>
+                    <p>@Model.TransactionCount transactions</p>
+                </div>
+                
+                <a asp-action="Details" asp-route-id="@Model.Id" class="btn btn-outline-primary">
+                    <i class="bi bi-list"></i> Voir les transactions de ce compte
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

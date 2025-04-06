@@ -1,0 +1,73 @@
+@model AccountViewModel
+@{
+    ViewData["Title"] = "Nouveau compte";
+}
+
+<h1>Créer un nouveau compte</h1>
+
+<hr />
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-wallet2"></i> Détails du compte
+            </div>
+            <div class="card-body">
+                <form asp-action="Create">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Name" class="form-label"></label>
+                        <input asp-for="Name" class="form-control" />
+                        <span asp-validation-for="Name" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="InitialBalance" class="form-label"></label>
+                        <div class="input-group">
+                            <span class="input-group-text">€</span>
+                            <input asp-for="InitialBalance" class="form-control" type="number" step="0.01" />
+                        </div>
+                        <span asp-validation-for="InitialBalance" class="text-danger"></span>
+                        <div class="form-text">Le solde initial est optionnel. Laissez 0 si vous commencez à zéro.</div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between">
+                        <a asp-action="Index" class="btn btn-outline-secondary">
+                            <i class="bi bi-arrow-left"></i> Retour à la liste
+                        </a>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-check-circle"></i> Créer
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Informations
+            </div>
+            <div class="card-body">
+                <h5 class="card-title">Création d'un compte</h5>
+                <p class="card-text">
+                    Un compte représente une source d'argent, comme un compte bancaire, un portefeuille d'espèces, ou une carte de crédit.
+                </p>
+                
+                <h6>Comment utiliser un compte :</h6>
+                <ul>
+                    <li>Chaque compte suit son propre solde</li>
+                    <li>Vous pouvez créer autant de comptes que nécessaire</li>
+                    <li>Les transactions sont toujours associées à un compte spécifique</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

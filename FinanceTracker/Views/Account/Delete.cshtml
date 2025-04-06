@@ -1,0 +1,51 @@
+@model AccountViewModel
+@{
+    ViewData["Title"] = "Supprimer le compte";
+}
+
+<h1 class="text-danger">Supprimer le compte</h1>
+
+<div class="alert alert-danger">
+    <h4><i class="bi bi-exclamation-triangle"></i> Attention</h4>
+    <p>
+        Êtes-vous sûr de vouloir supprimer ce compte ? Cette action est irréversible et entrainera la suppression de toutes les transactions associées.
+    </p>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Détails du compte à supprimer
+    </div>
+    <div class="card-body">
+        <dl class="row">
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.Name)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.Name)</dd>
+            
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CurrentBalance)</dt>
+            <dd class="col-sm-9" class="@(Model.CurrentBalance >= 0 ? "text-success" : "text-danger")">
+                @Html.DisplayFor(model => model.CurrentBalance)
+            </dd>
+            
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.InitialBalance)</dt>
+            <dd class="col-sm-9">@Html.DisplayFor(model => model.InitialBalance)</dd>
+            
+            <dt class="col-sm-3">Nombre de transactions</dt>
+            <dd class="col-sm-9">@Model.TransactionCount transactions</dd>
+            
+            <dt class="col-sm-3">@Html.DisplayNameFor(model => model.CreatedAt)</dt>
+            <dd class="col-sm-9">@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+        </dl>
+    </div>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <div class="d-flex justify-content-between">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Annuler et retourner à la liste
+        </a>
+        <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Confirmer la suppression
+        </button>
+    </div>
+</form>
