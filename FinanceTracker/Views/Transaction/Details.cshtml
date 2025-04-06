@@ -1,0 +1,254 @@
+@model TransactionViewModel
+@{
+    ViewData["Title"] = "Détails de la transaction";
+}
+
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>Détails de la transaction</h1>
+    <div>
+        <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+            <i class="bi bi-pencil"></i> Modifier
+        </a>
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Retour à la liste
+        </a>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-info-circle"></i> Informations de la transaction
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <dl>
+                            <dt>@Html.DisplayNameFor(model => model.Type)</dt>
+                            <dd>
+                                @if (Model.Type == TransactionType.Credit)
+                                {
+                                    <span class="badge bg-success">Crédit</span>
+                                }
+                                else
+                                {
+                                    <span class="badge bg-danger">Débit</span>
+                                }
+                            </dd>
+                            
+                            <dt>@Html.DisplayNameFor(model => model.Amount)</dt>
+                            <dd class="@(Model.Type == TransactionType.Credit ? "text-success" : "text-danger") fw-bold">
+                                @Html.DisplayFor(model => model.Amount)
+                            </dd>
+                            
+                            <dt>@Html.DisplayNameFor(model => model.Date)</dt>
+                            <dd>@Model.Date.ToString("dd/MM/yyyy")</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <dl>
+                            <dt>@Html.DisplayNameFor(model => model.AccountName)</dt>
+                            <dd>
+                                <a asp-controller="Account" asp-action="Details" asp-route-id="@Model.AccountId">
+                                    @Html.DisplayFor(model => model.AccountName)
+                                </a>
+                            </dd>
+                            
+                            <dt>@Html.DisplayNameFor(model => model.CreatedAt)</dt>
+                            <dd>@Model.CreatedAt.ToString("dd/MM/yyyy HH:mm")</dd>
+                            
+                            @if (Model.UpdatedAt.HasValue)
+                            {
+                                <dt>Dernière modification</dt>
+                                <dd>@Model.UpdatedAt.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                            }
+                        </dl>
+                    </div>
+                </div>
+                
+                @if (!string.IsNullOrEmpty(Model.Notes))
+                {
+                    <div class="row">
+                        <div class="col-12">
+                            <dl>
+                                <dt>@Html.DisplayNameFor(model => model.Notes)</dt>
+                                <dd>@Html.DisplayFor(model => model.Notes)</dd>
+                            </dl>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-tags"></i> Catégories
+            </div>
+            <div class="card-body">
+                @if (Model.Categories.Any())
+                {
+                    <div class="table-responsive">
+                        <table class="table table-sm">
+                            <thead>
+                                <tr>
+                                    <th>Catégorie</th>
+                                    <th class="text-end">Montant</th>
+                                    <th class="text-end">Pourcentage</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach (var category in Model.Categories)
+                                {
+                                    <tr>
+                                        <td>
+                                            <a asp-controller="Category" asp-action="Details" asp-route-id="@category.CategoryId" class="text-decoration-none">
+                                                <span class="badge" style="background-color: @category.CategoryColor">@category.CategoryName</span>
+                                            </a>
+                                        </td>
+                                        <td class="text-end">@category.Amount.ToString("C2")</td>
+                                        <td class="text-end">@((category.Amount / Model.Amount * 100).ToString("0.##"))%</td>
+                                    </tr>
+                                }
+                            </tbody>
+                        </table>
+                    </div>
+                }
+                else
+                {
+                    <p class="text-muted">Aucune catégorie associée à cette transaction.</p>
+                }
+            </div>
+        </div>
+        
+        @if (Model.Attachments.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-paperclip"></i> Pièces jointes
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        @foreach (var attachment in Model.Attachments)
+                        {
+                            <div class="col-md-4 mb-3">
+                                <div class="card h-100">
+                                    @if (attachment.IsImage)
+                                    {
+                                        <a href="@attachment.FilePath" target="_blank" class="image-preview">
+                                            <img src="@attachment.FilePath" class="card-img-top attachment-thumbnail" alt="@attachment.FileName" />
+                                        </a>
+                                    }
+                                    else
+                                    {
+                                        <div class="card-img-top d-flex align-items-center justify-content-center bg-light" style="height: 120px;">
+                                            <i class="bi bi-file-earmark-text text-muted" style="font-size: 3rem;"></i>
+                                        </div>
+                                    }
+                                    <div class="card-body p-2">
+                                        <p class="card-text small text-truncate">@attachment.FileName</p>
+                                        <p class="card-text small text-muted">@attachment.FormattedSize</p>
+                                    </div>
+                                    <div class="card-footer p-2 text-center">
+                                        <a href="@attachment.FilePath" target="_blank" class="btn btn-sm btn-outline-primary">
+                                            <i class="bi bi-download"></i> Télécharger
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+    
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <i class="bi bi-lightning"></i> Actions rapides
+            </div>
+            <div class="card-body">
+                <div class="d-grid gap-2">
+                    <a asp-action="Edit" asp-route-id="@Model.Id" class="btn btn-primary">
+                        <i class="bi bi-pencil"></i> Modifier la transaction
+                    </a>
+                    <a asp-action="Delete" asp-route-id="@Model.Id" class="btn btn-danger">
+                        <i class="bi bi-trash"></i> Supprimer la transaction
+                    </a>
+                    <a asp-controller="Account" asp-action="Details" asp-route-id="@Model.AccountId" class="btn btn-outline-secondary">
+                        <i class="bi bi-wallet2"></i> Voir le compte
+                    </a>
+                    <a asp-action="Create" class="btn btn-outline-success">
+                        <i class="bi bi-plus-circle"></i> Nouvelle transaction
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        @if (Model.Categories.Any())
+        {
+            <div class="card mb-4">
+                <div class="card-header">
+                    <i class="bi bi-pie-chart"></i> Répartition
+                </div>
+                <div class="card-body">
+                    <canvas id="categoryChart" height="200"></canvas>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    @if (Model.Categories.Any())
+    {
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                const ctx = document.getElementById('categoryChart').getContext('2d');
+                
+                // Préparer les données pour le graphique
+                const data = {
+                    labels: [@Html.Raw(string.Join(",", Model.Categories.Select(c => $"'{c.CategoryName}'").ToArray()))],
+                    datasets: [{
+                        data: [@string.Join(",", Model.Categories.Select(c => c.Amount))],
+                        backgroundColor: [@Html.Raw(string.Join(",", Model.Categories.Select(c => $"'{c.CategoryColor}'").ToArray()))],
+                    }]
+                };
+                
+                new Chart(ctx, {
+                    type: 'doughnut',
+                    data: data,
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        var label = context.label || '';
+                                        var value = context.raw;
+                                        var total = context.dataset.data.reduce(function(acc, val) { return acc + val; }, 0);
+                                        var percentage = Math.round((value / total) * 100);
+                                        return label + ': ' + value.toLocaleString('fr-FR', { style: 'currency', currency: 'EUR' }) + ' (' + percentage + '%)';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+                
+                // Image preview
+                const imageLinks = document.querySelectorAll('.image-preview');
+                imageLinks.forEach(link => {
+                    link.addEventListener('click', function(e) {
+                        e.preventDefault();
+                        window.open(this.href, '_blank', 'width=800,height=600');
+                    });
+                });
+            });
+        </script>
+    }
+}

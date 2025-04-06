@@ -1,0 +1,94 @@
+@model TransactionViewModel
+@{
+    ViewData["Title"] = "Supprimer la transaction";
+}
+
+<h1 class="text-danger">Supprimer la transaction</h1>
+
+<div class="alert alert-danger">
+    <h4><i class="bi bi-exclamation-triangle"></i> Attention</h4>
+    <p>
+        Êtes-vous sûr de vouloir supprimer cette transaction ? Cette action est irréversible.
+    </p>
+</div>
+
+<div class="card mb-4">
+    <div class="card-header">
+        <i class="bi bi-info-circle"></i> Détails de la transaction à supprimer
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6">
+                <dl>
+                    <dt>@Html.DisplayNameFor(model => model.Type)</dt>
+                    <dd>
+                        @if (Model.Type == TransactionType.Credit)
+                        {
+                            <span class="badge bg-success">Crédit</span>
+                        }
+                        else
+                        {
+                            <span class="badge bg-danger">Débit</span>
+                        }
+                    </dd>
+                    
+                    <dt>@Html.DisplayNameFor(model => model.Amount)</dt>
+                    <dd class="@(Model.Type == TransactionType.Credit ? "text-success" : "text-danger") fw-bold">
+                        @Html.DisplayFor(model => model.Amount)
+                    </dd>
+                    
+                    <dt>@Html.DisplayNameFor(model => model.Date)</dt>
+                    <dd>@Model.Date.ToString("dd/MM/yyyy")</dd>
+                </dl>
+            </div>
+            <div class="col-md-6">
+                <dl>
+                    <dt>@Html.DisplayNameFor(model => model.AccountName)</dt>
+                    <dd>@Html.DisplayFor(model => model.AccountName)</dd>
+                    
+                    <dt>Catégories</dt>
+                    <dd>
+                        @if (Model.Categories.Any())
+                        {
+                            @foreach (var category in Model.Categories)
+                            {
+                                <span class="badge" style="background-color: @category.CategoryColor">@category.CategoryName</span>
+                            }
+                        }
+                        else
+                        {
+                            <span class="text-muted">Aucune catégorie</span>
+                        }
+                    </dd>
+                    
+                    <dt>Pièces jointes</dt>
+                    <dd>@Model.Attachments.Count pièce(s) jointe(s)</dd>
+                </dl>
+            </div>
+        </div>
+        
+        @if (!string.IsNullOrEmpty(Model.Notes))
+        {
+            <div class="row">
+                <div class="col-12">
+                    <dl>
+                        <dt>@Html.DisplayNameFor(model => model.Notes)</dt>
+                        <dd>@Html.DisplayFor(model => model.Notes)</dd>
+                    </dl>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+<form asp-action="Delete">
+    <input type="hidden" asp-for="Id" />
+    <div class="d-flex justify-content-between">
+        <a asp-action="Index" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Annuler et retourner à la liste
+        </a>
+        <button type="submit" class="btn btn-danger">
+            <i class="bi bi-trash"></i> Confirmer la suppression
+        </button>
+    </div>
+</form>
